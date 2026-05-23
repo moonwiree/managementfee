@@ -23,7 +23,8 @@
         .sticky-header-shadow { box-shadow: 0 2px 5px -2px rgba(0,0,0,0.08); }
         .table-scroll-container { -webkit-overflow-scrolling: touch; overscroll-behavior: none; transform: translateZ(0); }
         
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 <body class="text-slate-800 antialiased"> 
@@ -37,10 +38,10 @@
         const TableIcon = ({size=24, className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>);
         const ShieldIcon = ({size=24, className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>);
         const InfoIcon = ({size=16, className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>);
-        const AlertIcon = ({size=16, className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>);
+        const SettingsIcon = ({size=16, className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>);
         const CloseIcon = ({size=24, className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>);
 
-        // --- Constants & Core Math ---
+        // --- Constants & Math ---
         const TOTAL_AREA = 335130; 
         const OTHER_INCOME = 179393; 
         const BASE_FIXED_EXPENSE = 4545197; 
@@ -50,7 +51,7 @@
         const formatNum = (amount) => new Intl.NumberFormat('zh-HK', { maximumFractionDigits: 0 }).format(amount);
 
         const calculateFinancials = (rate, rebate, year, remunRate=5.8, expIncrease=0, r2Bug=false) => {
-            let grossMgmtFeeBase, grossSinkingBase, actualPaidMonths;
+            let grossMgmtFeeBase, grossSinkingBase;
             
             if (year === 2026) {
                 grossMgmtFeeBase = TOTAL_AREA * 0.9 * (2.0 * 7 + rate * 5);
@@ -78,17 +79,22 @@
             let baseExp = BASE_FIXED_EXPENSE * (1 + expIncrease / 100);
             let totalCashOut = baseExp + netCommission;
 
-            let opCashFlow = totalCashIn - totalCashOut; // (A)
-            let sinkingAdvance = -rebateSinking; // (B)
+            let opCashFlow = totalCashIn - totalCashOut;
+            let sinkingAdvance = -rebateSinking;
             
-            let accountingSurplus = opCashFlow + sinkingAdvance; // A + B
-            let totalSinkingStored = grossSinkingBase; // 12 months 10%
-            let wealthGrowth = opCashFlow + totalSinkingStored;
+            let accountingSurplus = opCashFlow + sinkingAdvance; 
+            let totalSinkingStored = grossSinkingBase; 
+            let totalBalance = opCashFlow + totalSinkingStored; // 大廈當年總結餘
 
-            return { opCashFlow, sinkingAdvance, accountingSurplus, wealthGrowth, netCommission, totalCashIn, totalCashOut, baseExp };
+            // 最終平均呎價
+            let finalAvgRate = year === 2026 
+                ? ((2.0 * 7 + rate * (5 - rebate)) / 12)
+                : (rate * (12 - rebate) / 12);
+
+            return { opCashFlow, sinkingAdvance, accountingSurplus, totalBalance, netCommission, totalSinkingStored, finalAvgRate };
         };
 
-        // --- Rules Modal Component ---
+        // --- Rules Modal ---
         const RulesModal = ({ isOpen, onClose }) => {
             if (!isOpen) return null;
             return (
@@ -108,8 +114,8 @@
                                 <p>在回贈（免交）月份內，因業主未實際繳費，物管公司<span className="font-bold">依法不能收取該月對應之管理酬金</span>。因此回贈月數減少，物管公司實際落袋酬金將直接增加。</p>
                             </div>
                             <div className="space-y-1">
-                                <h4 className="font-bold text-indigo-700">3.「帳面盈虧」的本質 (資產轉移)</h4>
-                                <p>在免交期內，大廈需從日常活期戶口墊支應繳的 10% 撥入死期儲備基金。此舉實為大廈資產之<span className="font-bold">內部強制儲蓄轉移</span>，錢仍存於屋苑，並非對外流失或真實虧損。</p>
+                                <h4 className="font-bold text-indigo-700">3.「大廈總結餘 vs 帳面盈虧」</h4>
+                                <p>免交期內大廈需墊支活期10%撥入儲備基金，此為「帳面虧損」來源。但此舉實為大廈資產之<span className="font-bold">內部強制儲蓄轉移</span>。評估大廈儲錢能力，應看「當年總結餘」（即儲備金與帳面盈虧之加總）。</p>
                             </div>
                         </div>
                         <div className="p-4 border-t border-slate-100 bg-slate-50">
@@ -124,17 +130,24 @@
         const App = () => {
           const [activePage, setActivePage] = useState('calculator');
           
-          const [yearMode, setYearMode] = useState(2026); // 2026 or 2027
-          const [calcRate, setCalcRate] = useState(2.0);
-          const [calcRebateMonths, setCalcRebateMonths] = useState(4);
+          const [yearMode, setYearMode] = useState(2026); 
+          const [calcRate, setCalcRate] = useState(1.6);
+          const [calcRebateMonths, setCalcRebateMonths] = useState(3);
           const [selectedUnit, setSelectedUnit] = useState('F');
           const [customArea, setCustomArea] = useState(1000);
           
+          const [remunRate, setRemunRate] = useState(5.8);
+          const [expIncrease, setExpIncrease] = useState(0);
           const [useR2Bug, setUseR2Bug] = useState(false);
           const [showRules, setShowRules] = useState(false);
 
           useEffect(() => {
-              if (yearMode === 2026) setUseR2Bug(false);
+              if (yearMode === 2026) {
+                  setUseR2Bug(false);
+                  setRemunRate(7.0); // 2026 fixed rate
+              } else {
+                  setRemunRate(5.8); // 2027 default
+              }
           }, [yearMode]);
 
           return (
@@ -150,6 +163,8 @@
                       calcRebateMonths={calcRebateMonths} setCalcRebateMonths={setCalcRebateMonths}
                       selectedUnit={selectedUnit} setSelectedUnit={setSelectedUnit}
                       customArea={customArea} setCustomArea={setCustomArea}
+                      remunRate={remunRate} setRemunRate={setRemunRate}
+                      expIncrease={expIncrease} setExpIncrease={setExpIncrease}
                       useR2Bug={useR2Bug} setUseR2Bug={setUseR2Bug}
                       onOpenRules={() => setShowRules(true)}
                     />
@@ -158,7 +173,10 @@
                 
                 {activePage === 'matrix' && (
                   <div className="h-full flex flex-col pb-0">
-                    <MatrixView yearMode={yearMode} useR2Bug={useR2Bug} />
+                    <MatrixView 
+                      yearMode={yearMode} setYearMode={setYearMode}
+                      remunRate={remunRate} expIncrease={expIncrease} useR2Bug={useR2Bug} 
+                    />
                   </div>
                 )}
 
@@ -169,6 +187,7 @@
                 )}
               </div>
 
+              {/* Bottom Nav */}
               <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom)]">
                 <div className="flex">
                   <button onClick={() => setActivePage('calculator')} className={`flex-1 pt-3 pb-4 flex flex-col items-center gap-1 transition-colors ${activePage === 'calculator' ? 'text-indigo-600' : 'text-slate-400'}`}>
@@ -190,7 +209,7 @@
         };
 
         // --- Page 1: Calculator ---
-        const CalculatorView = ({ yearMode, setYearMode, calcRate, setCalcRate, calcRebateMonths, setCalcRebateMonths, selectedUnit, setSelectedUnit, customArea, setCustomArea, useR2Bug, setUseR2Bug, onOpenRules }) => {
+        const CalculatorView = ({ yearMode, setYearMode, calcRate, setCalcRate, calcRebateMonths, setCalcRebateMonths, selectedUnit, setSelectedUnit, customArea, setCustomArea, remunRate, setRemunRate, expIncrease, setExpIncrease, useR2Bug, setUseR2Bug, onOpenRules }) => {
           
           const currentUnitArea = selectedUnit === '自訂' ? customArea : UNIT_AREAS[selectedUnit];
           
@@ -205,15 +224,19 @@
                 ? currentUnitArea * (2.0 * 7 + calcRate * (5 - calcRebateMonths))
                 : currentUnitArea * calcRate * (12 - calcRebateMonths);
           
-          const personalDiff = currentPaid - baselinePaid;
-          const isMoreExpensive = personalDiff > 0;
+          const monthlyPaid = currentPaid / 12;
+          const monthlyDiff = (currentPaid - baselinePaid) / 12;
+          const isMoreExpensive = monthlyDiff > 0;
 
-          // Financial Math
-          const data = calculateFinancials(calcRate, calcRebateMonths, yearMode, 5.8, 0, useR2Bug);
+          // Financial Math (Current vs Baseline)
+          const data = calculateFinancials(calcRate, calcRebateMonths, yearMode, remunRate, expIncrease, useR2Bug);
+          const baselineData = calculateFinancials(2.0, 4, yearMode, remunRate, expIncrease, false);
+          
+          const commDiff = data.netCommission - baselineData.netCommission;
           const isDeficit = data.opCashFlow < 0;
 
           return (
-            <div className="p-3 md:p-4 space-y-5 max-w-lg mx-auto">
+            <div className="p-3 md:p-4 space-y-4 max-w-lg mx-auto">
               
               {/* Year Switcher */}
               <div className="bg-slate-200 p-1 rounded-xl flex shadow-inner">
@@ -225,10 +248,10 @@
                   </button>
               </div>
 
-              {/* Personal Impact */}
+              {/* Compact Top Panel: Monthly Pain Point */}
               <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-sm font-bold text-slate-800">我家實繳管理費評估</h2>
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-sm font-bold text-slate-800">我家攤勻每月實繳</h2>
                   <select value={selectedUnit} onChange={(e) => setSelectedUnit(e.target.value)} className="bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold rounded-md px-2 py-1 focus:outline-none">
                     {Object.keys(UNIT_AREAS).map(unit => (
                       <option key={unit} value={unit}>單位 {unit} (~{UNIT_AREAS[unit]}呎)</option>
@@ -237,14 +260,20 @@
                   </select>
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-3 flex flex-col justify-center items-center mb-3">
-                  <div className="text-[11px] text-slate-500 mb-1">預計全年合共實繳總額</div>
-                  <div className="text-2xl font-black text-slate-800">{formatCurrency(currentPaid)}</div>
+                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-slate-500 mb-0.5">最終平均呎價</span>
+                        <span className="text-lg font-black text-slate-700">${data.finalAvgRate.toFixed(2)}</span>
+                    </div>
+                    <div className="w-px h-8 bg-slate-200 mx-2"></div>
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] text-slate-500 mb-0.5">攤勻每月繳費</span>
+                        <span className="text-2xl font-black text-indigo-600">{formatCurrency(monthlyPaid)}</span>
+                    </div>
                 </div>
 
-                <div className={`rounded-lg p-2.5 text-center text-[12px] font-bold ${personalDiff === 0 ? 'bg-slate-100 text-slate-600' : isMoreExpensive ? 'bg-orange-50 text-orange-700 border border-orange-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`}>
-                    🆚 對比現有方案 ($2.0 / 回4個月)：<br/>
-                    {personalDiff === 0 ? '實繳總額維持不變' : isMoreExpensive ? `🟠 預計全年需多付 ${formatCurrency(Math.abs(personalDiff))}` : `🟢 預計全年可節省 ${formatCurrency(Math.abs(personalDiff))}`}
+                <div className={`rounded-lg p-2 text-center text-[11px] font-bold ${monthlyDiff === 0 ? 'bg-slate-100 text-slate-600' : isMoreExpensive ? 'bg-rose-50 text-rose-700 border border-rose-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`}>
+                    🆚 比 $2.0回4 方案：{monthlyDiff === 0 ? '每月實繳不變' : isMoreExpensive ? `🔴 每月需多付 ${formatCurrency(Math.abs(monthlyDiff))}` : `🟢 每月可節省 ${formatCurrency(Math.abs(monthlyDiff))}`}
                 </div>
               </div>
 
@@ -252,7 +281,7 @@
               <div className="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 space-y-6">
                 <div>
                   <div className="flex justify-between items-end mb-2">
-                    <span className="text-sm font-bold text-slate-700">管理費單價 (每呎)</span>
+                    <span className="text-sm font-bold text-slate-700">管理費基數單價 (每呎)</span>
                     <span className="text-base font-black text-blue-600">${calcRate.toFixed(1)}</span>
                   </div>
                   <input type="range" min="1.5" max="2.5" step="0.1" value={calcRate} onChange={(e) => setCalcRate(parseFloat(e.target.value))} className="range-blue" />
@@ -267,97 +296,113 @@
                 </div>
               </div>
 
-              {/* Commission Exposure */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3.5 flex justify-between items-center">
-                  <div>
-                      <div className="text-xs font-bold text-slate-800">🏢 預計物管公司實際收取酬金</div>
-                      <div className="text-[9px] text-slate-400 mt-0.5">*(免交期內依法免收酬金，月數減將推高酬金)</div>
+              {/* Commission Exposure with Comparison */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 flex flex-col justify-center">
+                  <div className="flex justify-between items-start mb-2">
+                      <div>
+                          <div className="text-xs font-bold text-slate-800">🏢 預計物管公司實際收取酬金</div>
+                          <div className="text-[9px] text-slate-400 mt-0.5">免交期內依法免收酬金</div>
+                      </div>
+                      <div className="text-base font-black text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">{formatCurrency(data.netCommission)}</div>
                   </div>
-                  <div className="text-base font-black text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md">{formatCurrency(data.netCommission)}</div>
+                  {commDiff !== 0 && (
+                      <div className={`text-[10px] font-bold text-right ${commDiff > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                          🆚 比 $2.0回4 方案，管理處實抽酬金{commDiff > 0 ? `多了 ${formatCurrency(Math.abs(commDiff))} !` : `少了 ${formatCurrency(Math.abs(commDiff))}`}
+                      </div>
+                  )}
               </div>
 
-              {/* Wealth Growth (The Big Number) */}
+              {/* Wealth Growth (The Big Number Restored) */}
               <div className="bg-gradient-to-br from-indigo-900 to-slate-800 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div className="text-xs font-bold text-indigo-200 mb-2">🏦 當年大廈資金淨增長 (總蓄水量)</div>
+                <div className="text-xs font-bold text-indigo-200 mb-2">🏦 大廈當年總結餘 (實質儲錢能力)</div>
                 <div className="text-4xl font-black text-white tracking-tight mb-3">
-                    {data.wealthGrowth > 0 ? '+' : ''}{formatCurrency(data.wealthGrowth)}
+                    {data.totalBalance > 0 ? '+' : ''}{formatCurrency(data.totalBalance)}
                 </div>
                 
-                <div className="text-[10px] text-indigo-100/70 border-t border-white/10 pt-2 flex justify-between">
-                    <span>= 撥入死期儲備金 ({formatCurrency(TOTAL_AREA * 0.1 * (yearMode===2026 ? (2.0*7+calcRate*5) : calcRate*12))})</span>
-                    <span>{data.opCashFlow >= 0 ? '+' : '-'} 活期日常結餘 ({formatCurrency(Math.abs(data.opCashFlow))})</span>
+                <div className="text-[10px] text-indigo-100/80 border-t border-white/10 pt-2 flex justify-between">
+                    <span>= 當年撥入死期儲備金 ({formatCurrency(data.totalSinkingStored)})</span>
+                    <span>{data.accountingSurplus >= 0 ? '+' : ''} 帳面盈虧 ({formatCurrency(data.accountingSurplus)})</span>
                 </div>
               </div>
 
-              {/* Subtle Accounting Surplus */}
-              <div className="px-1 flex justify-between items-center text-[11px] text-slate-500">
-                  <div className="flex items-center gap-1">
-                      📝 官方報表顯示之「帳面盈虧」: <span className="font-bold">{data.accountingSurplus >= 0 ? '+' : ''}{formatCurrency(data.accountingSurplus)}</span>
-                  </div>
-              </div>
-              <div className="px-1 text-[9px] text-slate-400 leading-tight">
-                  (註：此「帳面盈虧」已預先扣除由活期墊支撥入死期儲備金之強制儲蓄款項，屬會計淨值，非對外現金流失)
-              </div>
-
-              {/* Deficit Warning Banner */}
-              {isDeficit && (
-                  <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex gap-3 items-start">
-                      <AlertIcon className="text-rose-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                          <div className="text-xs font-bold text-rose-800 mb-1">⚠️ 財務提示：日常營運現金流為負數</div>
-                          <div className="text-[10px] text-rose-700/80 leading-relaxed">
-                              此方案意味著當年實收之管理費不足以支付水電等基本開支。大廈需動用歷年累積盈餘（前期老本）來填補 <strong>{formatCurrency(Math.abs(data.opCashFlow))}</strong> 的當年差額。
-                          </div>
-                      </div>
-                  </div>
-              )}
-
-              {/* R2 Bug Toggle for 2027 */}
+              {/* Advanced Settings for 2027 (Hidden Details) */}
               {yearMode === 2027 && (
-                  <label className="flex items-start gap-3 cursor-pointer p-3 bg-amber-50 rounded-lg border border-amber-200 mt-2">
-                    <input type="checkbox" checked={useR2Bug} onChange={(e) => setUseR2Bug(e.target.checked)} className="mt-0.5 w-4 h-4 accent-amber-600" />
-                    <div>
-                      <div className="text-xs font-bold text-amber-800">還原官方 R2 報表計算法 (含算式誤差)</div>
-                      <div className="text-[10px] mt-1 text-amber-700 leading-relaxed">
-                        官方報表在推算 2027 酬金時，使用了 2026 年的高基數進行 5.8% 計算。勾選此項可模擬該誤差以對齊官方數字。
+                  <details className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden group">
+                      <summary className="p-3 text-xs font-bold text-slate-700 flex justify-between items-center cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                          <span className="flex items-center gap-2"><SettingsIcon className="text-slate-500"/> 進階參數設定 (2027預測)</span>
+                          <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                      </summary>
+                      <div className="p-4 space-y-4 border-t border-slate-100 text-sm">
+                          <div>
+                              <div className="flex justify-between items-center mb-2">
+                                  <span className="text-xs font-bold text-slate-600">酬金比例 (%)</span>
+                                  <input type="number" step="0.1" value={remunRate} onChange={e => setRemunRate(Number(e.target.value))} className="w-16 border rounded px-1.5 py-1 text-xs text-right" />
+                              </div>
+                              <input type="range" min="0" max="10" step="0.1" value={remunRate} onChange={e => setRemunRate(Number(e.target.value))} className="range-blue" />
+                          </div>
+                          <div>
+                              <div className="flex justify-between items-center mb-2">
+                                  <span className="text-xs font-bold text-slate-600">日常開支通脹增幅 (%)</span>
+                                  <input type="number" step="1" value={expIncrease} onChange={e => setExpIncrease(Number(e.target.value))} className="w-16 border rounded px-1.5 py-1 text-xs text-right" />
+                              </div>
+                              <input type="range" min="-10" max="20" step="1" value={expIncrease} onChange={e => setExpIncrease(Number(e.target.value))} className="range-blue" />
+                          </div>
+                          <label className="flex items-start gap-2 cursor-pointer p-2 bg-amber-50 rounded-lg border border-amber-200">
+                              <input type="checkbox" checked={useR2Bug} onChange={e => setUseR2Bug(e.target.checked)} className="mt-0.5 accent-amber-600" />
+                              <div className="text-[10px] text-amber-800 font-bold leading-tight">還原官方 R2 報表錯誤計算法<br/><span className="font-normal text-amber-700">模擬用2026高基數計算2027酬金之誤差</span></div>
+                          </label>
                       </div>
-                    </div>
-                  </label>
+                  </details>
               )}
 
-              <button onClick={onOpenRules} className="w-full mt-4 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:bg-slate-50 transition-colors">
+              <button onClick={onOpenRules} className="w-full py-3 bg-white border border-slate-300 text-slate-700 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:bg-slate-50 transition-colors">
                   <InfoIcon className="text-indigo-600" /> 了解計算基準與物管財務規則
               </button>
-
             </div>
           );
         };
 
         // --- Page 2: Matrix ---
-        const MatrixView = ({ yearMode, useR2Bug }) => {
+        const MatrixView = ({ yearMode, setYearMode, remunRate, expIncrease, useR2Bug }) => {
           
-          const SCENARIOS = [
-            { rate: 2.0, rebate: 4, label: "$2.0 (回4)" },
-            { rate: 1.8, rebate: 4, label: "$1.8 (回4)" },
-            { rate: 1.8, rebate: 3, label: "$1.8 (回3)" },
-            { rate: 1.7, rebate: 3, label: "$1.7 (回3)" },
-            { rate: 1.6, rebate: 3, label: "$1.6 (回3)" },
-            { rate: 1.6, rebate: 2, label: "$1.6 (回2)" }
+          // Define Scenarios logically from high to low. Target scenarios will be highlighted.
+          const SCENARIOS_2026 = [
+            { rate: 2.0, rebate: 4, label: "$2.0 (回4)", isTarget: true },
+            { rate: 1.8, rebate: 4, label: "$1.8 (回4)", isTarget: false },
+            { rate: 1.8, rebate: 3, label: "$1.8 (回3)", isTarget: false },
+            { rate: 1.7, rebate: 3, label: "$1.7 (回3)", isTarget: false },
+            { rate: 1.6, rebate: 4, label: "$1.6 (回4)", isTarget: true }, // Added as requested
+            { rate: 1.6, rebate: 3, label: "$1.6 (回3)", isTarget: true },
+            { rate: 1.6, rebate: 2, label: "$1.6 (回2)", isTarget: false }
           ];
 
-          const thTopLeftClass = "sticky top-0 left-0 z-40 bg-slate-800 text-white font-bold text-xs py-3 px-2 border-b border-r border-slate-700 align-middle sticky-header-shadow sticky-col-shadow w-[120px] min-w-[120px] max-w-[120px] bg-clip-padding";
-          const thTopClass = "sticky top-0 z-30 bg-slate-100 text-slate-800 font-bold text-[11px] text-center py-3 px-1 border-b border-slate-300 min-w-[75px] sticky-header-shadow bg-clip-padding";
-          const tdLeftClass = "sticky left-0 z-20 font-bold text-slate-700 text-[10px] leading-tight py-2.5 px-2 border-r border-b border-slate-200 sticky-col-shadow w-[120px] min-w-[120px] max-w-[120px] whitespace-normal break-words bg-clip-padding";
-          const tdNormalClass = "py-2.5 px-1.5 text-center border-b border-slate-100 bg-white text-[11px] tabular-nums whitespace-nowrap min-w-[75px]";
+          const SCENARIOS_2027 = [
+            { rate: 2.0, rebate: 4, label: "$2.0 (回4)", isTarget: true },
+            { rate: 1.8, rebate: 4, label: "$1.8 (回4)", isTarget: false },
+            { rate: 1.8, rebate: 3, label: "$1.8 (回3)", isTarget: true },
+            { rate: 1.7, rebate: 3, label: "$1.7 (回3)", isTarget: false },
+            { rate: 1.6, rebate: 3, label: "$1.6 (回3)", isTarget: false },
+            { rate: 1.6, rebate: 2, label: "$1.6 (回2)", isTarget: true }
+          ];
 
+          const scenarios = yearMode === 2026 ? SCENARIOS_2026 : SCENARIOS_2027;
+
+          const thTopLeftClass = "sticky top-0 left-0 z-40 bg-slate-800 text-white font-bold text-xs py-3 px-2 border-b border-r border-slate-700 align-middle sticky-header-shadow sticky-col-shadow w-[110px] min-w-[110px] max-w-[110px] bg-clip-padding";
+          const tdLeftClass = "sticky left-0 z-20 font-bold text-slate-700 text-[10px] leading-tight py-3 px-2 border-r border-b border-slate-200 sticky-col-shadow w-[110px] min-w-[110px] max-w-[110px] whitespace-normal break-words bg-clip-padding";
+          
           return (
             <div className="flex flex-col h-full bg-slate-50 overflow-hidden">
-              <div className="px-3 pt-3 pb-2 bg-white shadow-sm z-20 flex-shrink-0 border-b border-slate-200">
-                <h1 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-1">
-                  <TableIcon size={18} className="text-indigo-600" />
-                  {yearMode}年 情境橫向全景報表
-                </h1>
-                <p className="text-[10px] text-slate-500">左右滑動查看完整數據對比，客觀分析各方案之財務淨值。</p>
+              <div className="px-3 pt-3 pb-2 bg-white shadow-sm z-20 flex-shrink-0">
+                <div className="flex justify-between items-center mb-2">
+                    <h1 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
+                      <TableIcon size={18} className="text-indigo-600" /> 全景報表
+                    </h1>
+                    <div className="bg-slate-100 p-0.5 rounded-lg flex border border-slate-200">
+                        <button onClick={() => setYearMode(2026)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${yearMode === 2026 ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>2026</button>
+                        <button onClick={() => setYearMode(2027)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${yearMode === 2027 ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>2027</button>
+                    </div>
+                </div>
+                <p className="text-[10px] text-slate-500">已用 <span className="font-bold text-amber-600 bg-amber-50 px-1 rounded">專屬底色</span> 標記焦點對比方案。左右滑動查看完整數據。</p>
               </div>
 
               <div className="flex-1 overflow-auto bg-slate-200 relative table-scroll-container">
@@ -366,10 +411,11 @@
                     <thead>
                       <tr>
                         <th className={thTopLeftClass}>財務指標 \ 方案</th>
-                        {SCENARIOS.map((s, idx) => (
-                          <th key={idx} className={thTopClass}>
-                            <div className="text-slate-800">{s.label.split(' ')[0]}</div>
-                            <div className="text-[9px] text-slate-500 mt-0.5">{s.label.split(' ')[1]}</div>
+                        {scenarios.map((s, idx) => (
+                          <th key={idx} className={`sticky top-0 z-30 font-bold text-[11px] text-center py-2 px-1 border-b border-slate-300 min-w-[75px] sticky-header-shadow bg-clip-padding ${s.isTarget ? 'bg-amber-100 text-amber-900 border-x border-amber-300' : 'bg-slate-100 text-slate-800'}`}>
+                            {s.isTarget && <div className="text-[8px] bg-amber-500 text-white rounded-full px-1.5 py-0.5 w-max mx-auto mb-0.5">📌 焦點</div>}
+                            <div>{s.label.split(' ')[0]}</div>
+                            <div className={`text-[9px] mt-0.5 ${s.isTarget ? 'text-amber-700' : 'text-slate-500'}`}>{s.label.split(' ')[1]}</div>
                           </th>
                         ))}
                       </tr>
@@ -377,59 +423,54 @@
                     <tbody>
                       <tr>
                         <td className={`${tdLeftClass} bg-indigo-50/30`}>預計物管實際收取酬金</td>
-                        {SCENARIOS.map((s, idx) => {
-                          const data = calculateFinancials(s.rate, s.rebate, yearMode, 5.8, 0, useR2Bug);
-                          return <td key={idx} className={`${tdNormalClass} font-bold text-slate-700 bg-indigo-50/30`}>{formatNum(data.netCommission)}</td>
+                        {scenarios.map((s, idx) => {
+                          const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug);
+                          return <td key={idx} className={`py-2.5 px-1.5 text-center border-b text-[11px] tabular-nums ${s.isTarget ? 'bg-amber-50/50 border-x border-amber-200 border-b-amber-200 font-bold text-amber-900' : 'bg-indigo-50/30 border-slate-100 text-slate-700'}`}>
+                              {formatNum(data.netCommission)}
+                          </td>
                         })}
                       </tr>
 
                       <tr>
-                        <td className={`${tdLeftClass} bg-white`}>
-                          日常營運純現金結餘<br/>
-                          <span className="text-[8px] text-slate-400 font-normal">(大於0即無須動用老本)</span>
-                        </td>
-                        {SCENARIOS.map((s, idx) => {
-                          const data = calculateFinancials(s.rate, s.rebate, yearMode, 5.8, 0, useR2Bug);
+                        <td className={`${tdLeftClass} bg-white`}>日常營運純現金結餘<br/><span className="text-[8px] text-slate-400 font-normal">(大於0即無須動用老本)</span></td>
+                        {scenarios.map((s, idx) => {
+                          const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug);
                           const isPos = data.opCashFlow >= 0;
-                          return (
-                            <td key={idx} className={`${tdNormalClass} font-bold ${isPos ? 'text-emerald-600' : 'text-rose-600'}`}>
+                          return <td key={idx} className={`py-2.5 px-1.5 text-center border-b text-[11px] tabular-nums font-bold ${s.isTarget ? 'bg-amber-50/50 border-x border-amber-200 border-b-amber-200' : 'bg-white border-slate-100'} ${isPos ? 'text-emerald-600' : 'text-rose-600'}`}>
                               {isPos ? '+' : ''}{formatNum(data.opCashFlow)}
-                            </td>
-                          )
+                          </td>
                         })}
                       </tr>
 
                       <tr>
-                        <td className={`${tdLeftClass} bg-slate-50`}>
-                          活期墊支入死期儲備金<br/>
-                          <span className="text-[8px] text-slate-400 font-normal">(免交期內大廈強制儲蓄)</span>
-                        </td>
-                        {SCENARIOS.map((s, idx) => {
-                          const data = calculateFinancials(s.rate, s.rebate, yearMode, 5.8, 0, useR2Bug);
-                          return <td key={idx} className={`${tdNormalClass} text-slate-500 bg-slate-50`}>{formatNum(data.sinkingAdvance)}</td>
+                        <td className={`${tdLeftClass} bg-slate-50`}>活期墊支入死期儲備金<br/><span className="text-[8px] text-slate-400 font-normal">(大廈內部強制轉移)</span></td>
+                        {scenarios.map((s, idx) => {
+                          const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug);
+                          return <td key={idx} className={`py-2.5 px-1.5 text-center border-b text-[11px] tabular-nums ${s.isTarget ? 'bg-amber-50/50 border-x border-amber-200 border-b-amber-200 text-amber-700' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>
+                              {formatNum(data.sinkingAdvance)}
+                          </td>
                         })}
                       </tr>
 
                       <tr>
-                        <td className={`${tdLeftClass} bg-white border-b-2 border-slate-300`}>
-                          📝 官方顯示帳面盈虧<br/>
-                          <span className="text-[8px] text-slate-400 font-normal">(日常結餘 + 墊支儲備)</span>
-                        </td>
-                        {SCENARIOS.map((s, idx) => {
-                          const data = calculateFinancials(s.rate, s.rebate, yearMode, 5.8, 0, useR2Bug);
-                          return <td key={idx} className={`${tdNormalClass} border-b-2 border-slate-300 font-bold text-slate-600`}>{data.accountingSurplus >= 0 ? '+' : ''}{formatNum(data.accountingSurplus)}</td>
+                        <td className={`${tdLeftClass} bg-white border-b-2 border-slate-300`}>📝 官方顯示帳面盈虧<br/><span className="text-[8px] text-slate-400 font-normal">(日常結餘 + 墊支儲備)</span></td>
+                        {scenarios.map((s, idx) => {
+                          const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug);
+                          return <td key={idx} className={`py-2.5 px-1.5 text-center border-b-2 text-[11px] tabular-nums font-bold ${s.isTarget ? 'bg-amber-50 border-x border-amber-300 border-b-amber-400 text-slate-700' : 'bg-white border-slate-300 text-slate-600'}`}>
+                              {data.accountingSurplus >= 0 ? '+' : ''}{formatNum(data.accountingSurplus)}
+                          </td>
                         })}
                       </tr>
 
                       <tr>
                         <td className={`${tdLeftClass} bg-indigo-50 border-b-2 border-slate-400`}>
-                          <div className="text-indigo-800 font-black">🏦 當年資金淨增長</div>
-                          <span className="text-[8px] text-indigo-600/70 font-normal">(全苑財富真實蓄水量)</span>
+                          <div className="text-indigo-800 font-black">🏦 大廈當年總結餘</div>
+                          <span className="text-[8px] text-indigo-600/70 font-normal">(實質儲錢能力)</span>
                         </td>
-                        {SCENARIOS.map((s, idx) => {
-                          const data = calculateFinancials(s.rate, s.rebate, yearMode, 5.8, 0, useR2Bug);
-                          return <td key={idx} className={`${tdNormalClass} bg-indigo-50 border-b-2 border-slate-400 font-black text-sm text-indigo-700`}>
-                            +{formatNum(data.wealthGrowth)}
+                        {scenarios.map((s, idx) => {
+                          const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug);
+                          return <td key={idx} className={`py-3 px-1.5 text-center border-b-2 text-[12px] tabular-nums font-black ${s.isTarget ? 'bg-amber-100 border-x border-amber-400 border-b-amber-500 text-amber-900' : 'bg-indigo-50 border-slate-400 text-indigo-700'}`}>
+                            +{formatNum(data.totalBalance)}
                           </td>
                         })}
                       </tr>
