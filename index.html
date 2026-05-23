@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>L5T2 管工具</title>
+    <title>L5T2 管理費方案計算工具</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -128,11 +128,23 @@
                             </div>
                             <div className="space-y-1">
                                 <h4 className="font-bold text-cyan-700">2.「免交期 0 酬金機制」</h4>
-                                <p>在回贈（免交）月份內，因業主未實際繳費，物管公司<span className="font-bold">依法不能收取該月對應之管理酬金</span>。因此回贈月數減少，物管公司實際落袋酬金將直接增加。</p>
+                                <p>在回贈（免交）月份內，物管公司<span className="font-bold">不收取該月對應之管理酬金</span>。因此回贈月數減少，物管公司實際落袋酬金將直接增加。</p>
                             </div>
                             <div className="space-y-1">
                                 <h4 className="font-bold text-cyan-700">3.「大廈總結餘 vs 帳面盈虧」</h4>
-                                <p>免交期內大廈需墊支活期10%撥入儲備基金，此為「帳面虧損」來源。但此舉實為大廈資產之<span className="font-bold">內部強制儲蓄轉移</span>。評估大廈儲錢能力，應看「當年總結餘」（即儲備金與帳面盈虧之加總）。</p>
+                                <p>免交期內大廈仍需墊支10%管理費作為儲備基金，款項由活期戶口撥入儲備基金，此為大部分方案的「帳面虧損」來源。但此舉實為大廈資產之<span className="font-bold">內部強制儲蓄轉移</span>。評估大廈儲錢能力，應看「當年總結餘」（即儲備金與帳面盈虧之加總）。</p>
+                            </div>
+                            <div className="space-y-2 pt-2 border-t border-slate-100">
+                                <h4 className="font-bold text-cyan-700">4.「目前大廈真實財政狀態與防禦力」</h4>
+                                <p>大廈目前持有兩個獨立帳戶：</p>
+                                <ul className="list-disc pl-5 space-y-1 text-slate-700">
+                                    <li><span className="font-bold text-slate-800">日常營運戶口 (活期)</span>：結餘約 570 萬（當中 400 萬作定期存款）。此戶口資金由物管公司按日常開支靈活調配。</li>
+                                    <li><span className="font-bold text-slate-800">共同儲備基金 (死期)</span>：結餘約 360 萬。此為大廈的「法定保險箱」。</li>
+                                </ul>
+                                <div className="bg-cyan-50 p-2.5 rounded-lg border border-cyan-100 text-[13px] leading-relaxed mt-2 text-cyan-900">
+                                    <span className="font-bold">⚖️ 法律保障提示：</span><br/>
+                                    根據澳門《分層建築物管理法律制度》，要動用共同儲備基金，<span className="font-bold bg-cyan-200 px-1 rounded">必須依法召開業主大會</span>（最低法定出席率為佔樓宇總值 25%），並須獲 <span className="font-bold bg-cyan-200 px-1 rounded">出席業主過半數份額同意</span> 方可合法動用。因此，將資金撥入此戶口享有最高級別的安全保障，絕不會被輕易挪用。
+                                </div>
                             </div>
                         </div>
                         <div className="p-4 border-t border-slate-100 bg-slate-50">
@@ -218,7 +230,7 @@
                 <div className="flex">
                   <button onClick={() => setActivePage('calculator')} className={`flex-1 pt-3 pb-4 flex flex-col items-center gap-1 transition-colors ${activePage === 'calculator' ? 'text-cyan-700' : 'text-slate-400'}`}>
                     <CalcIcon size={22} />
-                    <span className="text-[11px] font-bold">動態精算</span>
+                    <span className="text-[11px] font-bold">計算器</span>
                   </button>
                   <button onClick={() => setActivePage('matrix')} className={`flex-1 pt-3 pb-4 flex flex-col items-center gap-1 transition-colors ${activePage === 'matrix' ? 'text-cyan-700' : 'text-slate-400'}`}>
                     <TableIcon size={22} />
@@ -326,7 +338,7 @@
                   <div className="flex justify-between items-start mb-2">
                       <div>
                           <div className="text-xs font-bold text-slate-800">🏢 預計物管公司實際收取酬金</div>
-                          <div className="text-[9px] text-slate-400 mt-0.5">免交期內依法免收酬金</div>
+                          <div className="text-[9px] text-slate-400 mt-0.5">免交期內免收酬金</div>
                       </div>
                       <div className="text-base font-black text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">{formatCurrency(data.netCommission)}</div>
                   </div>
@@ -344,7 +356,7 @@
                       <div>
                           <div className="text-sm font-black text-rose-800 mb-1">⚠️ 嚴重警告：日常營運出現赤字！</div>
                           <div className="text-[11px] font-bold text-rose-700/90 leading-relaxed">
-                              此方案的實收管理費不足以支付基本開支。大廈需動用歷年老本填補 <span className="bg-rose-200 px-1 rounded">{formatCurrency(Math.abs(data.opCashFlow))}</span> 的當年差額。
+                              此方案的實收管理費不足以支付基本開支。大廈需動用活期戶口老本填補 <span className="bg-rose-200 px-1 rounded">{formatCurrency(Math.abs(data.opCashFlow))}</span> 的當年差額。
                           </div>
                       </div>
                   </div>
@@ -354,15 +366,20 @@
                       <div>
                           <div className="text-sm font-black text-emerald-800 mb-1">財務健康狀態：優良</div>
                           <div className="text-[11px] font-bold text-emerald-700/90 leading-relaxed">
-                              大廈僅需實收 <span className="bg-emerald-200 px-1 rounded">{actualPaidMonthsText} 個月</span> 的管理費，已完全足夠應付全年所有水電、人工及物管酬金，無須動用老本！
+                              大廈僅需實收 <span className="bg-emerald-200 px-1 rounded">{actualPaidMonthsText} 個月</span> 的管理費，已完全足夠應付全年所有水電、人工及物管酬金，無須消耗活期戶口老本！
+                              <div className="mt-1.5 pt-1.5 border-t border-emerald-200/60 text-emerald-800/80">
+                                  💡 <span className="font-bold">為何官方帳面會出現負值？</span><br/>
+                                  這是因為在免交期內，大廈依法需從「活期戶口」墊支 10% 撥入「共同儲備基金」。此舉實為大廈資產之<span className="font-bold bg-emerald-200/50 px-1 rounded">內部強制儲蓄轉移</span>，絕非真實的資金流失。
+                              </div>
                           </div>
                       </div>
                   </div>
+                  
               )}
 
               {/* Wealth Growth (Option C: Cyan / Slate Gradient) */}
               <div className="bg-gradient-to-br from-cyan-900 to-slate-800 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div className="text-sm font-bold text-cyan-100 mb-2">🏦 大廈當年總結餘 (實質儲錢能力)</div>
+                <div className="text-sm font-bold text-cyan-100 mb-2">🏦 大廈當年總結餘 (儲備金+帳面盈餘，為大廈一年實質儲錢能力)</div>
                 <div className="text-4xl font-black text-white tracking-tight mb-4">
                     {data.totalBalance > 0 ? '+' : ''}{formatCurrency(data.totalBalance)}
                 </div>
@@ -371,7 +388,7 @@
                 <div className="bg-black/20 rounded-lg p-3 border border-white/10">
                     <div className="flex flex-col gap-2 text-xs font-bold text-cyan-100">
                         <div className="flex justify-between items-center">
-                            <span className="flex items-center gap-1.5">🔒 撥入死期儲備金</span>
+                            <span className="flex items-center gap-1.5">🔒 撥入共同儲備金</span>
                             <span className="text-sm text-white">{formatCurrency(data.totalSinkingStored)}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -521,7 +538,7 @@
                       </tr>
 
                       <tr>
-                        <td className={`${tdLeftClass} bg-cyan-50/30`}>預計物管實際收取酬金</td>
+                        <td className={`${tdLeftClass} bg-cyan-50`}>預計物管實際收取酬金</td>
                         {scenarios.map((s, idx) => {
                           const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug, manualExpense, includeOtherIncome, otherIncomeValue);
                           return <td key={idx} className={`py-2.5 px-1.5 text-center border-b text-[11px] tabular-nums ${s.isTarget ? 'bg-amber-50/50 border-x border-amber-200 border-b-amber-200 font-bold text-amber-900' : 'bg-cyan-50/30 border-slate-100 text-slate-700'}`}>
@@ -552,7 +569,7 @@
                       </tr>
 
                       <tr>
-                        <td className={`${tdLeftClass} bg-blue-50/50`}>🔒 當年撥入死期儲備金<br/><span className="text-[8px] text-blue-600/70 font-normal">(強制儲蓄總額)</span></td>
+                        <td className={`${tdLeftClass} bg-blue-50`}>🔒 當年撥入死期儲備金<br/><span className="text-[8px] text-blue-600/70 font-normal">(強制儲蓄總額)</span></td>
                         {scenarios.map((s, idx) => {
                           const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug, manualExpense, includeOtherIncome, otherIncomeValue);
                           return <td key={idx} className={`py-2.5 px-1.5 text-center border-b text-[11px] tabular-nums font-bold text-blue-700 ${s.isTarget ? 'bg-amber-100/50 border-x border-amber-300 border-b-amber-300' : 'bg-blue-50/50 border-slate-200'}`}>
