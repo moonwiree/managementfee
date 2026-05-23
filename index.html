@@ -368,7 +368,7 @@
                           <div className="text-[11px] font-bold text-emerald-700/90 leading-relaxed">
                               大廈僅需實收 <span className="bg-emerald-200 px-1 rounded">{actualPaidMonthsText} 個月</span> 的管理費，已完全足夠應付全年所有水電、人工及物管酬金，無須消耗活期戶口老本！
                               <div className="mt-1.5 pt-1.5 border-t border-emerald-200/60 text-emerald-800/80">
-                                  💡 <span className="font-bold">為何官方帳面會出現負值？</span><br/>
+                                  💡 <span className="font-bold">假若官方帳面出現負值，請看本解釋!!</span><br/>
                                   這是因為在免交期內，大廈依法需從「活期戶口」墊支 10% 撥入「共同儲備基金」。此舉實為大廈資產之<span className="font-bold bg-emerald-200/50 px-1 rounded">內部強制儲蓄轉移</span>，絕非真實的資金流失。
                               </div>
                           </div>
@@ -379,7 +379,7 @@
 
               {/* Wealth Growth (Option C: Cyan / Slate Gradient) */}
               <div className="bg-gradient-to-br from-cyan-900 to-slate-800 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div className="text-sm font-bold text-cyan-100 mb-2">🏦 大廈當年總結餘 (儲備金+帳面盈餘，為大廈一年實質儲錢能力)</div>
+                <div className="text-sm font-bold text-cyan-100 mb-2">🏦 大廈當年總結餘 (實質大廈儲錢能力)</div>
                 <div className="text-4xl font-black text-white tracking-tight mb-4">
                     {data.totalBalance > 0 ? '+' : ''}{formatCurrency(data.totalBalance)}
                 </div>
