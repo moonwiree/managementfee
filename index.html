@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>L5T2 財務精算工具</title>
+    <title>L5T2 管工具</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -89,7 +89,6 @@
             let commissionRebate = rebateMgmt * commissionRate;
             let netCommission = grossCommission - commissionRebate;
 
-            // Manual Expense Override Logic
             let baseExp = (manualExpStr !== '' && manualExpStr !== null) 
                 ? Number(manualExpStr) 
                 : BASE_FIXED_EXPENSE * (1 + expIncrease / 100);
@@ -124,15 +123,15 @@
                         </div>
                         <div className="p-5 space-y-4 text-sm text-slate-700 leading-relaxed max-h-[70vh] overflow-y-auto">
                             <div className="space-y-1">
-                                <h4 className="font-bold text-indigo-700">1.「90/10 法定拆分法則」</h4>
+                                <h4 className="font-bold text-cyan-700">1.「90/10 法定拆分法則」</h4>
                                 <p>業主繳交之管理費總額中，<span className="font-bold">90%</span> 撥入日常營運活期戶口（物管公司按此金額抽佣）；<span className="font-bold">10%</span> 依法強制存入共同儲備基金（死期戶口，絕對免佣）。</p>
                             </div>
                             <div className="space-y-1">
-                                <h4 className="font-bold text-indigo-700">2.「免交期 0 酬金機制」</h4>
+                                <h4 className="font-bold text-cyan-700">2.「免交期 0 酬金機制」</h4>
                                 <p>在回贈（免交）月份內，因業主未實際繳費，物管公司<span className="font-bold">依法不能收取該月對應之管理酬金</span>。因此回贈月數減少，物管公司實際落袋酬金將直接增加。</p>
                             </div>
                             <div className="space-y-1">
-                                <h4 className="font-bold text-indigo-700">3.「大廈總結餘 vs 帳面盈虧」</h4>
+                                <h4 className="font-bold text-cyan-700">3.「大廈總結餘 vs 帳面盈虧」</h4>
                                 <p>免交期內大廈需墊支活期10%撥入儲備基金，此為「帳面虧損」來源。但此舉實為大廈資產之<span className="font-bold">內部強制儲蓄轉移</span>。評估大廈儲錢能力，應看「當年總結餘」（即儲備金與帳面盈虧之加總）。</p>
                             </div>
                         </div>
@@ -154,10 +153,9 @@
           const [selectedUnit, setSelectedUnit] = useState('F');
           const [customArea, setCustomArea] = useState(1000);
           
-          // 2027 Advanced States
           const [remunRate, setRemunRate] = useState(5.8);
           const [expIncrease, setExpIncrease] = useState(0);
-          const [manualExpense, setManualExpense] = useState(''); // Empty means disabled
+          const [manualExpense, setManualExpense] = useState(''); 
           const [includeOtherIncome, setIncludeOtherIncome] = useState(true);
           const [otherIncomeValue, setOtherIncomeValue] = useState(179393);
           const [useR2Bug, setUseR2Bug] = useState(false);
@@ -218,11 +216,11 @@
               {/* Bottom Nav */}
               <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom)]">
                 <div className="flex">
-                  <button onClick={() => setActivePage('calculator')} className={`flex-1 pt-3 pb-4 flex flex-col items-center gap-1 transition-colors ${activePage === 'calculator' ? 'text-indigo-600' : 'text-slate-400'}`}>
+                  <button onClick={() => setActivePage('calculator')} className={`flex-1 pt-3 pb-4 flex flex-col items-center gap-1 transition-colors ${activePage === 'calculator' ? 'text-cyan-700' : 'text-slate-400'}`}>
                     <CalcIcon size={22} />
                     <span className="text-[11px] font-bold">動態精算</span>
                   </button>
-                  <button onClick={() => setActivePage('matrix')} className={`flex-1 pt-3 pb-4 flex flex-col items-center gap-1 transition-colors ${activePage === 'matrix' ? 'text-indigo-600' : 'text-slate-400'}`}>
+                  <button onClick={() => setActivePage('matrix')} className={`flex-1 pt-3 pb-4 flex flex-col items-center gap-1 transition-colors ${activePage === 'matrix' ? 'text-cyan-700' : 'text-slate-400'}`}>
                     <TableIcon size={22} />
                     <span className="text-[11px] font-bold">全景報表</span>
                   </button>
@@ -259,16 +257,18 @@
           
           const commDiff = data.netCommission - baselineData.netCommission;
           const isDeficit = data.opCashFlow < 0;
+          
+          const actualPaidMonthsText = yearMode === 2026 ? (12 - calcRebateMonths) : (12 - calcRebateMonths); // UI simplifies actual months paid concept
 
           return (
             <div className="p-3 md:p-4 space-y-4 max-w-lg mx-auto">
               
               {/* Year Switcher */}
               <div className="bg-slate-200 p-1 rounded-xl flex shadow-inner">
-                  <button onClick={() => setYearMode(2026)} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${yearMode === 2026 ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>
+                  <button onClick={() => setYearMode(2026)} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${yearMode === 2026 ? 'bg-white text-cyan-800 shadow-sm' : 'text-slate-500'}`}>
                       2026年 (7+5過渡期)
                   </button>
-                  <button onClick={() => setYearMode(2027)} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${yearMode === 2027 ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>
+                  <button onClick={() => setYearMode(2027)} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${yearMode === 2027 ? 'bg-white text-cyan-800 shadow-sm' : 'text-slate-500'}`}>
                       2027年起 (單一費率)
                   </button>
               </div>
@@ -293,7 +293,7 @@
                     <div className="w-px h-8 bg-slate-200 mx-2"></div>
                     <div className="flex flex-col items-end">
                         <span className="text-[10px] text-slate-500 mb-0.5">攤勻每月繳費</span>
-                        <span className="text-2xl font-black text-indigo-600">{formatCurrency(monthlyPaid)}</span>
+                        <span className="text-2xl font-black text-cyan-700">{formatCurrency(monthlyPaid)}</span>
                     </div>
                 </div>
 
@@ -337,8 +337,8 @@
                   )}
               </div>
 
-              {/* Deficit Warning Banner (Restored & Emphasized) */}
-              {isDeficit && (
+              {/* Deficit / Success Banner (Dynamic) */}
+              {isDeficit ? (
                   <div className="bg-rose-50 border-2 border-rose-400 rounded-xl p-3.5 flex gap-3 items-start shadow-sm">
                       <AlertIcon className="text-rose-600 flex-shrink-0 mt-0.5" />
                       <div>
@@ -348,25 +348,35 @@
                           </div>
                       </div>
                   </div>
+              ) : (
+                  <div className="bg-emerald-50 border-2 border-emerald-400 rounded-xl p-3.5 flex gap-3 items-start shadow-sm">
+                      <div className="text-emerald-600 flex-shrink-0 mt-0.5 text-xl">✅</div>
+                      <div>
+                          <div className="text-sm font-black text-emerald-800 mb-1">財務健康狀態：優良</div>
+                          <div className="text-[11px] font-bold text-emerald-700/90 leading-relaxed">
+                              大廈僅需實收 <span className="bg-emerald-200 px-1 rounded">{actualPaidMonthsText} 個月</span> 的管理費，已完全足夠應付全年所有水電、人工及物管酬金，無須動用老本！
+                          </div>
+                      </div>
+                  </div>
               )}
 
-              {/* Wealth Growth (Formula Enlarged & Adjusted) */}
-              <div className="bg-gradient-to-br from-indigo-900 to-slate-800 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div className="text-sm font-bold text-indigo-200 mb-2">🏦 大廈當年總結餘 (實質儲錢能力)</div>
+              {/* Wealth Growth (Option C: Cyan / Slate Gradient) */}
+              <div className="bg-gradient-to-br from-cyan-900 to-slate-800 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
+                <div className="text-sm font-bold text-cyan-100 mb-2">🏦 大廈當年總結餘 (實質儲錢能力)</div>
                 <div className="text-4xl font-black text-white tracking-tight mb-4">
                     {data.totalBalance > 0 ? '+' : ''}{formatCurrency(data.totalBalance)}
                 </div>
                 
                 {/* 放大並突顯的公式 */}
                 <div className="bg-black/20 rounded-lg p-3 border border-white/10">
-                    <div className="flex flex-col gap-2 text-xs font-bold text-indigo-100">
+                    <div className="flex flex-col gap-2 text-xs font-bold text-cyan-100">
                         <div className="flex justify-between items-center">
                             <span className="flex items-center gap-1.5">🔒 撥入死期儲備金</span>
                             <span className="text-sm text-white">{formatCurrency(data.totalSinkingStored)}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px]">➕</div>
-                            <div className="flex-1 border-t border-indigo-400/30 border-dashed"></div>
+                            <div className="w-4 h-4 rounded-full bg-cyan-500 text-white flex items-center justify-center text-[10px]">➕</div>
+                            <div className="flex-1 border-t border-cyan-400/30 border-dashed"></div>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="flex items-center gap-1.5">📝 官方帳面盈虧</span>
@@ -387,43 +397,39 @@
                       </summary>
                       <div className="p-4 space-y-5 border-t border-slate-100">
                           
-                          {/* Manual Expense Input vs Inflation Slider */}
                           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                               <div className="flex justify-between items-center mb-3">
                                   <span className="text-xs font-bold text-slate-700">日常總開支 (澳門元)</span>
                                   <div className="flex items-center gap-2">
                                       {manualExpense !== '' && <button onClick={() => setManualExpense('')} className="text-[10px] text-rose-500 bg-rose-100 px-2 py-1 rounded font-bold">清除手動</button>}
-                                      <input type="number" placeholder={formatNum(data.baseExp)} value={manualExpense} onChange={e => setManualExpense(e.target.value)} className="w-24 border border-slate-300 rounded px-2 py-1 text-xs text-right font-bold text-slate-700 focus:border-indigo-500 focus:outline-none" />
+                                      <input type="number" placeholder={formatNum(data.baseExp)} value={manualExpense} onChange={e => setManualExpense(e.target.value)} className="w-24 border border-slate-300 rounded px-2 py-1 text-xs text-right font-bold text-slate-700 focus:border-cyan-600 focus:outline-none" />
                                   </div>
                               </div>
                               <div className={`transition-opacity ${manualExpense !== '' ? 'opacity-30 pointer-events-none' : ''}`}>
                                   <div className="flex justify-between items-center mb-2">
                                       <span className="text-[10px] font-bold text-slate-500">或按通脹率調整 (%)</span>
-                                      <span className="text-xs font-bold text-indigo-600">+{expIncrease}%</span>
+                                      <span className="text-xs font-bold text-cyan-700">+{expIncrease}%</span>
                                   </div>
                                   <input type="range" min="-10" max="20" step="1" value={expIncrease} onChange={e => setExpIncrease(Number(e.target.value))} className="range-blue" />
                               </div>
                           </div>
 
-                          {/* Other Income Toggle */}
                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
                               <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="checkbox" checked={includeOtherIncome} onChange={e => setIncludeOtherIncome(e.target.checked)} className="w-4 h-4 accent-indigo-600" />
+                                  <input type="checkbox" checked={includeOtherIncome} onChange={e => setIncludeOtherIncome(e.target.checked)} className="w-4 h-4 accent-cyan-700" />
                                   <span className="text-xs font-bold text-slate-700">包含會所/利息等收入</span>
                               </label>
-                              <input type="number" disabled={!includeOtherIncome} value={otherIncomeValue} onChange={e => setOtherIncomeValue(Number(e.target.value))} className="w-24 border border-slate-300 rounded px-2 py-1 text-xs text-right font-bold text-slate-700 disabled:opacity-50" />
+                              <input type="number" disabled={!includeOtherIncome} value={otherIncomeValue} onChange={e => setOtherIncomeValue(Number(e.target.value))} className="w-24 border border-slate-300 rounded px-2 py-1 text-xs text-right font-bold text-slate-700 disabled:opacity-50 focus:border-cyan-600 focus:outline-none" />
                           </div>
 
-                          {/* Commission Rate */}
                           <div>
                               <div className="flex justify-between items-center mb-2">
                                   <span className="text-xs font-bold text-slate-700">酬金比例 (%)</span>
-                                  <span className="text-xs font-bold text-indigo-600">{remunRate}%</span>
+                                  <span className="text-xs font-bold text-cyan-700">{remunRate}%</span>
                               </div>
                               <input type="range" min="0" max="10" step="0.1" value={remunRate} onChange={e => setRemunRate(Number(e.target.value))} className="range-blue" />
                           </div>
 
-                          {/* R2 Bug Toggle */}
                           <label className="flex items-start gap-2 cursor-pointer p-2.5 bg-amber-50 rounded-lg border border-amber-200">
                               <input type="checkbox" checked={useR2Bug} onChange={e => setUseR2Bug(e.target.checked)} className="mt-0.5 w-4 h-4 accent-amber-600" />
                               <div className="text-[11px] text-amber-800 font-bold leading-tight">還原官方 R2 報表錯誤計算法<br/><span className="font-normal text-amber-700 text-[10px]">模擬用2026高基數計算2027酬金之誤差</span></div>
@@ -433,7 +439,7 @@
               )}
 
               <button onClick={onOpenRules} className="w-full py-3.5 bg-white border border-slate-300 text-slate-700 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm active:bg-slate-50 transition-colors">
-                  <InfoIcon className="text-indigo-600" /> 了解計算基準與物管財務規則
+                  <InfoIcon className="text-cyan-700" /> 了解計算基準與物管財務規則
               </button>
             </div>
           );
@@ -471,14 +477,20 @@
               <div className="px-3 pt-3 pb-2 bg-white shadow-sm z-20 flex-shrink-0">
                 <div className="flex justify-between items-center mb-2">
                     <h1 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
-                      <TableIcon size={18} className="text-indigo-600" /> 全景報表
+                      <TableIcon size={18} className="text-cyan-700" /> 全景報表
                     </h1>
                     <div className="bg-slate-100 p-0.5 rounded-lg flex border border-slate-200">
-                        <button onClick={() => setYearMode(2026)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${yearMode === 2026 ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>2026</button>
-                        <button onClick={() => setYearMode(2027)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${yearMode === 2027 ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>2027</button>
+                        <button onClick={() => setYearMode(2026)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${yearMode === 2026 ? 'bg-white text-cyan-800 shadow-sm' : 'text-slate-500'}`}>2026</button>
+                        <button onClick={() => setYearMode(2027)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${yearMode === 2027 ? 'bg-white text-cyan-800 shadow-sm' : 'text-slate-500'}`}>2027</button>
                     </div>
                 </div>
                 <p className="text-[10px] text-slate-500">已用 <span className="font-bold text-amber-600 bg-amber-50 px-1 rounded">專屬底色</span> 標記焦點對比方案。左右滑動查看完整數據。</p>
+                {yearMode === 2027 && (
+                    <div className="mt-2 text-[9px] text-cyan-700 bg-cyan-50 p-1.5 rounded flex items-start gap-1 border border-cyan-100">
+                        <span className="mt-0.5">💡</span>
+                        <span>註：2027年之運算結果，已動態同步「第一頁計算器」中之進階參數（如手動開支、通脹率、酬金比例等）。</span>
+                    </div>
+                )}
               </div>
 
               <div className="flex-1 overflow-auto bg-slate-200 relative table-scroll-container">
@@ -497,11 +509,22 @@
                       </tr>
                     </thead>
                     <tbody>
+                      {/* 首行：最終呎價 */}
                       <tr>
-                        <td className={`${tdLeftClass} bg-indigo-50/30`}>預計物管實際收取酬金</td>
+                        <td className={`${tdLeftClass} bg-slate-50 border-b border-slate-300`}>👑 最終攤勻呎價</td>
                         {scenarios.map((s, idx) => {
                           const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug, manualExpense, includeOtherIncome, otherIncomeValue);
-                          return <td key={idx} className={`py-2.5 px-1.5 text-center border-b text-[11px] tabular-nums ${s.isTarget ? 'bg-amber-50/50 border-x border-amber-200 border-b-amber-200 font-bold text-amber-900' : 'bg-indigo-50/30 border-slate-100 text-slate-700'}`}>
+                          return <td key={idx} className={`py-2 px-1.5 text-center border-b border-slate-300 text-[12px] font-black ${s.isTarget ? 'bg-amber-50/80 border-x border-amber-300 text-amber-900' : 'bg-slate-50 text-slate-700'}`}>
+                              ${data.finalAvgRate.toFixed(2)}
+                          </td>
+                        })}
+                      </tr>
+
+                      <tr>
+                        <td className={`${tdLeftClass} bg-cyan-50/30`}>預計物管實際收取酬金</td>
+                        {scenarios.map((s, idx) => {
+                          const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug, manualExpense, includeOtherIncome, otherIncomeValue);
+                          return <td key={idx} className={`py-2.5 px-1.5 text-center border-b text-[11px] tabular-nums ${s.isTarget ? 'bg-amber-50/50 border-x border-amber-200 border-b-amber-200 font-bold text-amber-900' : 'bg-cyan-50/30 border-slate-100 text-slate-700'}`}>
                               {formatNum(data.netCommission)}
                           </td>
                         })}
@@ -539,13 +562,13 @@
                       </tr>
 
                       <tr>
-                        <td className={`${tdLeftClass} bg-indigo-50 border-b-2 border-slate-400`}>
-                          <div className="text-indigo-800 font-black">🏦 大廈當年總結餘</div>
-                          <span className="text-[8px] text-indigo-600/70 font-normal">(實質儲錢能力)</span>
+                        <td className={`${tdLeftClass} bg-cyan-50 border-b-2 border-slate-400`}>
+                          <div className="text-cyan-900 font-black">🏦 大廈當年總結餘</div>
+                          <span className="text-[8px] text-cyan-700/70 font-normal">(實質儲錢能力)</span>
                         </td>
                         {scenarios.map((s, idx) => {
                           const data = calculateFinancials(s.rate, s.rebate, yearMode, remunRate, expIncrease, useR2Bug, manualExpense, includeOtherIncome, otherIncomeValue);
-                          return <td key={idx} className={`py-3 px-1.5 text-center border-b-2 text-[12px] tabular-nums font-black ${s.isTarget ? 'bg-amber-100 border-x border-amber-400 border-b-amber-500 text-amber-900' : 'bg-indigo-50 border-slate-400 text-indigo-700'}`}>
+                          return <td key={idx} className={`py-3 px-1.5 text-center border-b-2 text-[12px] tabular-nums font-black ${s.isTarget ? 'bg-amber-100 border-x border-amber-400 border-b-amber-500 text-amber-900' : 'bg-cyan-50 border-slate-400 text-cyan-800'}`}>
                             +{formatNum(data.totalBalance)}
                           </td>
                         })}
